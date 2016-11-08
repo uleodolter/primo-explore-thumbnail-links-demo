@@ -1,5 +1,6 @@
 /*
  * Thumbnail links demo
+ * Ulrich Leodolter <ulrich.leodolter@obvsg.at>
  */
 app.controller('SearchResultThumbnailContainerAfterController', ['angularLoad', function (angularLoad) {
     var vm = this;
@@ -15,22 +16,16 @@ app.controller('SearchResultThumbnailContainerAfterController', ['angularLoad', 
      * Get fulltext and table-of-contents pnx.links.linkstorsrc links
      */ 
     vm.thumb_links = [];
-    if ('linktorsrc' in vm.parentCtrl.item.pnx.links) {
-        var numLinks = vm.parentCtrl.item.pnx.links['linktorsrc'].length;
-        for (var i=0; i < numLinks; i++) {
-            var link = vm.parentCtrl.item.pnx.links['linktorsrc'][i];
-
-            if (link.match(/\$\$U([^$]+)\$\$[ED](.*)/)) {
-                var link_href = RegExp.$1;
-                var link_text = RegExp.$2;
-
-                if (link_text.match(/(Fulltext|Volltext)/)) {
-                    vm.thumb_links.push([ link_href, 'Volltext' ]);
-                } else if (link_text.match(/(Table of Contents|Inhaltsverzeichnis)/)) {
-                    vm.thumb_links.push([ link_href, 'Inhalts-verzeichnis' ]);
+    if (vm.parentCtrl.links.length > 0) {
+        vm.parentCtrl.links.forEach(function(link, i, links) {
+            if (link.linkType == 'http://purl.org/pnx/linkType/linktorsrc') {
+                if (link.displayLabel.match(/(Fulltext|Volltext)/)) {
+                    vm.thumb_links.push([ link.linkURL, 'Volltext' ]);
+                } else if (link.displayLabel.match(/(Table of Contents|Inhaltsverzeichnis)/)) {
+                    vm.thumb_links.push([ link.linkURL, 'Inhalts-verzeichnis' ]);
                 }
             }
-        }
+        });
     }
 }]);
 
